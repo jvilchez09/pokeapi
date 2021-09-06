@@ -1,8 +1,7 @@
 <template>
   <v-container>
-    <div>
-      <PokeInfo /></div
-  ></v-container>
+    <PokeInfo />
+  </v-container>
 </template>
 
 <script>
