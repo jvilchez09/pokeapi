@@ -60,21 +60,21 @@ export default {
     },
     getPokemons(pokeList) {
       // console.log(pokeList);
-      // let i = 1;
+      let i = 1;
       pokeList.forEach((e) => {
         // console.log(e);
         PokeInfoServ.getInfo(e.url)
           .then((response) => {
-            this.pokemons.push(response.data.name);
+            // this.pokemons.push(response.data.name);
             console.log(response);
-            // this.pokemons[i] = response.data.name; //.data.results;
+            this.pokemons[i] = response.data.name; //.data.results;
             // console.log(response);
             // console.log(this.pokemons[i]);
           })
           .catch((error) => {
             console.log("hubo un errors" + error);
           });
-        // i++;
+        i++;
       });
 
       // for (let i = 0; i < this.pokeList; i++) {
