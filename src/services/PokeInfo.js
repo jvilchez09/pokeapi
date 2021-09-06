@@ -7,7 +7,7 @@ const apiClient = axios.create({
 });
 
 export default {
-  getInfo(id) {
+  fetchAllInfo(id) {
     // return apiClient.get("/pokemon?limit=151");
     // console.log(id);
     return apiClient.get("/pokemon/" + id);

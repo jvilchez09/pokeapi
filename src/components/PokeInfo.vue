@@ -19,11 +19,12 @@ export default {
     names: [],
   }),
   //
-  created() {
+  async created() {
     for (let i = 0; i < this.pokeList; i++) {
-      PokeInfoServ.getInfo(i + 1)
+      await PokeInfoServ.fetchAllInfo(i + 1)
         .then((response) => {
-          this.pokemons[i] = response.data.name; //.data.results;
+          // this.pokemons[i] = response.data.name; //.data.results;
+          this.pokemons.push(response.data.name);
           console.log(this.pokemons[i]);
         })
         .catch((error) => {
@@ -34,6 +35,9 @@ export default {
   mounted() {
     this.names = this.pokemons;
   },
-  methods: {},
+  methods: {
+    setName() {},
+    setImg() {},
+  },
 };
 </script>
