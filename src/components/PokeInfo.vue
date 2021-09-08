@@ -57,7 +57,7 @@ export default {
     for (let i = 0; i < this.pokeList; i++) {
       await PokeInfoServ.fetchAllInfo(i + 1)
         .then((response) => {
-          console.log(response);
+          //console.log(response);
           //id con 3 ceros al inicio
           this.id.push(response.data.id.toString().padStart(3, "0")); //.toUpperCase()
           //nombre primera letra mayuscula
