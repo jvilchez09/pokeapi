@@ -3,14 +3,14 @@
     <v-row>
       <v-col v-for="(item, i) in pokeList" :key="i" cols="4">
         <v-card
-          class="mx-auto"
+          class="mx-auto "
           max-width="344"
           align="center"
           :color="colors[type0[i]]"
         >
-          <v-img :src="sprites[i]" width="200px"></v-img>
-          <p>#{{ id[i] }}</p>
-          <v-card-title>
+          <v-img :src="sprites[i]" width="200px" class="pokemon"></v-img>
+          <p class="mb-0">#{{ id[i] }}</p>
+          <v-card-title class="justify-center pt-0">
             {{ pokemons[i] }}
           </v-card-title>
           <v-card-subtitle>Type: {{ type0[i] }} </v-card-subtitle>
@@ -59,7 +59,9 @@ export default {
         .then((response) => {
           // this.pokemons[i] = response.data.name; //.data.results;
           this.id.push(response.data.id.toString().padStart(3, "0")); //.toUpperCase()
-          this.pokemons.push(response.data.name); //.toUpperCase()
+          this.pokemons.push(
+            response.data.name[0].toUpperCase() + response.data.name.slice(1)
+          ); //.toUpperCase()
           this.sprites.push(
             response.data.sprites.other["official-artwork"].front_default
           );
@@ -81,7 +83,7 @@ export default {
           console.log("hubo un errors" + error);
         });
     }
-    console.log(this.allInfo);
+    // console.log(this.allInfo);
   },
   mounted() {
     // this.names = this.pokemons;
@@ -92,3 +94,9 @@ export default {
   },
 };
 </script>
+<style scoped>
+.pokemon {
+  background-color: #eeeeeea6;
+  border-radius: 80px !important;
+}
+</style>

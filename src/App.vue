@@ -1,6 +1,6 @@
 <template>
   <v-app>
-    <v-app-bar app color="primary" dark>
+    <!-- <v-app-bar app color="primary" dark>
       <div class="d-flex align-center">
         <v-img
           alt="Vuetify Logo"
@@ -31,7 +31,7 @@
         <span class="mr-2">Latest Release</span>
         <v-icon>mdi-open-in-new</v-icon>
       </v-btn>
-    </v-app-bar>
+    </v-app-bar> -->
 
     <v-main>
       <v-flex xs8 offset-xs2>
@@ -42,6 +42,11 @@
         <router-view />
       </v-flex>
     </v-main>
+    <v-card class="mt-5 pa-3 d-flex justify-center">
+      <v-card-title class="text-center pb-0" align-self="center">
+        <small> © 2021 - Por: <a href="https://jotajota.io">José V.</a></small>
+      </v-card-title>
+    </v-card>
   </v-app>
 </template>
 
@@ -58,5 +63,8 @@ export default {
   data: () => ({
     //
   }),
+  mounted() {
+    console.log("¡Atrápalos ya! (atrápalos ya) ¡POKEMÓN!🎯🤾🏽‍♀️🚵🏽‍♂️");
+  },
 };
 </script>
