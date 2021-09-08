@@ -35,6 +35,10 @@
 
     <v-main>
       <v-flex xs8 offset-xs2>
+        <h1 class="mt-2 text-center">
+          PokeDex
+        </h1>
+
         <router-view />
       </v-flex>
     </v-main>

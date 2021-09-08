@@ -1,9 +1,20 @@
 <template>
   <v-container>
     <v-row>
-      <v-col v-for="(item, i) in pokeList" :key="i" cols="3">
-        <img :src="sprites[i]" width="100px" />
-        {{ pokemons[i] }}
+      <v-col v-for="(item, i) in pokeList" :key="i" cols="4">
+        <v-card
+          class="mx-auto"
+          max-width="344"
+          align="center"
+          :color="colors[type0[i]]"
+        >
+          <v-img :src="sprites[i]" width="200px"></v-img>
+          <p>#{{ id[i] }}</p>
+          <v-card-title>
+            {{ pokemons[i] }}
+          </v-card-title>
+          <v-card-subtitle>Type: {{ type0[i] }} </v-card-subtitle>
+        </v-card>
       </v-col>
     </v-row>
   </v-container>
@@ -16,8 +27,30 @@ export default {
 
   data: () => ({
     pokeList: 151,
+    id: [],
     pokemons: [],
     sprites: [],
+    allInfo: [],
+    type0: [],
+    type1: [],
+    colors: {
+      fire: "#fda5a570",
+      grass: "#a3da8870",
+      electric: "#f8df3070",
+      water: "#a9bff370",
+      ground: "#e0c06870",
+      rock: "#b8a03870",
+      fairy: "#efa8ef70",
+      poison: "#9458ad70",
+      bug: "#a8b82070",
+      dragon: "#7038f870",
+      psychic: "#f8588870",
+      flying: "#a890f070",
+      fighting: "#c0302870",
+      ice: "#98d8d870",
+      ghost: "#70589870",
+      normal: "#bfbfa270",
+    },
   }),
   //
   async created() {
@@ -25,17 +58,30 @@ export default {
       await PokeInfoServ.fetchAllInfo(i + 1)
         .then((response) => {
           // this.pokemons[i] = response.data.name; //.data.results;
-          this.pokemons.push(response.data.name);
+          this.id.push(response.data.id.toString().padStart(3, "0")); //.toUpperCase()
+          this.pokemons.push(response.data.name); //.toUpperCase()
           this.sprites.push(
             response.data.sprites.other["official-artwork"].front_default
           );
+          this.allInfo.push(response.data);
           // console.log(this.pokemons[i].name);
+
+          /**
+           * Agregar los tipos, por ahora los estoy guardando en dos arreglos diferentes
+           */
+          this.type0.push(response.data.types[0].type.name);
+
+          // if (response.data.types[1].type.name) {
+          //   this.type1.push(response.data.types[1].type.name);
+          // } else {
+          //   this.type1.push(0);
+          // }
         })
         .catch((error) => {
           console.log("hubo un errors" + error);
         });
     }
-    console.log(this.sprites);
+    console.log(this.allInfo);
   },
   mounted() {
     // this.names = this.pokemons;
