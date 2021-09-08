@@ -38,7 +38,18 @@
         <h1 class="mt-2 text-center">
           PokeDex
         </h1>
-
+        <label
+          @click="dialog=!dialog" 
+          class="mt-2 text-rigth pokemon"
+          >
+          Click here to play: Who's that Pokémon!!
+        </label>
+        <v-dialog
+          v-model="dialog"
+          width="80%"
+          >
+          <PlayGame/>
+        </v-dialog>
         <router-view />
       </v-flex>
     </v-main>
@@ -52,19 +63,31 @@
 
 <script>
 // import HelloWorld from "./components/HelloWorld";
+import PlayGame from "./components/PlayGame";
 
 export default {
   name: "App",
 
   components: {
-    // HelloWorld,
+    PlayGame
   },
 
   data: () => ({
-    //
+    dialog: false
   }),
   mounted() {
     console.log("¡Atrápalos ya! (atrápalos ya) ¡POKEMÓN!🎯🤾🏽‍♀️🚵🏽‍♂️");
   },
 };
 </script>
+
+<style>
+.pokemon {
+  color: #f1c43a;
+  cursor: pointer;
+  font-family: 'Pokemon Solid', sans-serif;
+  letter-spacing: 0.82px;
+  text-shadow: 2px 0 0 #3a57a1, -2px 0 0 #3a57a1, 0 2px 0 #3a57a1, 0 -2px 0 #3a57a1, 1px 1px #3a57a1, -1px -1px 0 #3a57a1, 1px -1px 0 #3a57a1, -1px 1px 0 #3a57a1;
+  user-select: none;
+}
+</style>
