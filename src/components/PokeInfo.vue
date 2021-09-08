@@ -57,8 +57,10 @@ export default {
     for (let i = 0; i < this.pokeList; i++) {
       await PokeInfoServ.fetchAllInfo(i + 1)
         .then((response) => {
-          // this.pokemons[i] = response.data.name; //.data.results;
+          console.log(response);
+          //id con 3 ceros al inicio
           this.id.push(response.data.id.toString().padStart(3, "0")); //.toUpperCase()
+          //nombre primera letra mayuscula
           this.pokemons.push(
             response.data.name[0].toUpperCase() + response.data.name.slice(1)
           ); //.toUpperCase()
@@ -69,7 +71,7 @@ export default {
           // console.log(this.pokemons[i].name);
 
           /**
-           * Agregar los tipos, por ahora los estoy guardando en dos arreglos diferentes
+           * Agregar los tipos, por ahora solo mostraremos el principal
            */
           this.type0.push(response.data.types[0].type.name);
 
