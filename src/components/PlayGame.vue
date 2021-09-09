@@ -24,19 +24,29 @@
 
     <br /><br />
     <v-btn
+      class="mx-3"
       v-for="(item, index) in pokemonList"
       :key="index"
+      :color="item.type"
       @click="checkPokemon(item.number)"
     >
       {{ item.name }}
     </v-btn>
     <br /><br />
     <v-dialog v-model="dialog.show" persistent width="400">
-      <v-card class="text-center pa-5">
+      <v-card class="text-center pa-5 text-block ">
         {{ dialog.message }}
         <br /><br />
-        <v-img :src="pokemon.image" width="200px"></v-img><br />
-        <v-btn @click="prepareGame">Next One!</v-btn>
+        <v-img
+          class="inline-flex"
+          :class="bgClass"
+          :src="pokemon.image"
+          width="200px"
+        ></v-img
+        ><br />
+        <v-btn color="secondary terciary--text" @click="prepareGame"
+          >Next One!</v-btn
+        >
       </v-card>
     </v-dialog>
   </v-card>
@@ -52,6 +62,7 @@ export default {
     pokemon: [],
     pokemonImg: "",
     correctAnswer: 0,
+    bgClass: "",
     dialog: {
       show: false,
       message: "",
@@ -78,6 +89,7 @@ export default {
             name:
               response.data.name[0].toUpperCase() + response.data.name.slice(1),
             number: randomNumber,
+            type: response.data.types[0].type.name,
           };
         })
         .catch((err) => console.log(err));
@@ -106,11 +118,13 @@ export default {
     checkPokemon(pokemonNumber) {
       if (pokemonNumber === this.pokemon.number) {
         this.dialog.message =
-          "Well done! It's Pikachu!! 😜 " + this.pokemon.name;
+          "Well done! It's Pikachu!! 😜 \n" + this.pokemon.name;
         this.dialog.show = true;
+        this.bgClass = "pokemon-correct";
       } else {
-        this.dialog.message = "No dude, it's " + this.pokemon.name;
+        this.dialog.message = "No dude 😨, it's " + this.pokemon.name;
         this.dialog.show = true;
+        this.bgClass = "pokemon-wrong";
       }
     },
     closeDialog() {

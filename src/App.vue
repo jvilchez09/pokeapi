@@ -73,8 +73,6 @@ export default {
     dialog: false,
   }),
   mounted() {
-    // this.dialog = this.$parent.$store.state.dialog;
-    console.log(this.$store.state.dialog);
     console.log("¡Atrápalos ya! (atrápalos ya) ¡POKEMÓN!🎯🤾🏽‍♀️🚵🏽‍♂️");
   },
 };
@@ -91,7 +89,22 @@ export default {
     -1px 1px 0 #3a57a1;
   user-select: none;
 }
+.pokemon-bg {
+  background-color: #eeeeeea6;
+  border-radius: 80px !important;
+}
+.pokemon-correct {
+  background-color: #06a504bf;
+  border-radius: 70px !important;
+}
+.pokemon-wrong {
+  background-color: #d60d0dbf;
+  border-radius: 70px !important;
+}
 .inline-flex {
   display: inline-flex;
+}
+.text-block {
+  white-space: pre-wrap;
 }
 </style>

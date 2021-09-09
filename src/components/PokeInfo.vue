@@ -6,9 +6,9 @@
           class="mx-auto "
           max-width="344"
           align="center"
-          :color="colors[type0[i]]"
+          :color="type0[i]"
         >
-          <v-img :src="sprites[i]" width="200px" class="pokemon"></v-img>
+          <v-img :src="sprites[i]" width="200px" class="pokemon-bg"></v-img>
           <p class="mb-0">#{{ id[i] }}</p>
           <v-card-title class="justify-center pt-0">
             {{ pokemons[i] }}
@@ -96,9 +96,3 @@ export default {
   },
 };
 </script>
-<style scoped>
-.pokemon {
-  background-color: #eeeeeea6;
-  border-radius: 80px !important;
-}
-</style>
