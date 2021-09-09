@@ -79,10 +79,16 @@ export default {
 </script>
 
 <style>
+@font-face {
+  font-family: "pokemonsolid";
+  src: local("pokemonsolid"),
+    url(./assets/fonts/pokemonsolid.ttf) format("truetype");
+}
+
 .pokemon {
   color: #f1c43a;
   cursor: pointer;
-  font-family: "Pokemon Solid", sans-serif;
+  font-family: "pokemonsolid", sans-serif;
   letter-spacing: 0.82px;
   text-shadow: 2px 0 0 #3a57a1, -2px 0 0 #3a57a1, 0 2px 0 #3a57a1,
     0 -2px 0 #3a57a1, 1px 1px #3a57a1, -1px -1px 0 #3a57a1, 1px -1px 0 #3a57a1,
