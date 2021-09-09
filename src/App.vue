@@ -35,20 +35,17 @@
 
     <v-main>
       <v-flex xs8 offset-xs2>
-        <h1 class="mt-2 text-center">
-          PokeDex
+        <h1 class="mt-2 text-center primary--text">
+          Pokédex
         </h1>
         <label
-          @click="dialog=!dialog" 
+          @click="$store.state.dialog = !$store.state.dialog"
           class="mt-2 text-rigth pokemon"
-          >
+        >
           Click here to play: Who's that Pokémon!!
         </label>
-        <v-dialog
-          v-model="dialog"
-          width="80%"
-          >
-          <PlayGame/>
+        <v-dialog v-model="$store.state.dialog" width="80%">
+          <PlayGame />
         </v-dialog>
         <router-view />
       </v-flex>
@@ -69,13 +66,15 @@ export default {
   name: "App",
 
   components: {
-    PlayGame
+    PlayGame,
   },
 
   data: () => ({
-    dialog: false
+    dialog: false,
   }),
   mounted() {
+    // this.dialog = this.$parent.$store.state.dialog;
+    console.log(this.$store.state.dialog);
     console.log("¡Atrápalos ya! (atrápalos ya) ¡POKEMÓN!🎯🤾🏽‍♀️🚵🏽‍♂️");
   },
 };
@@ -85,9 +84,14 @@ export default {
 .pokemon {
   color: #f1c43a;
   cursor: pointer;
-  font-family: 'Pokemon Solid', sans-serif;
+  font-family: "Pokemon Solid", sans-serif;
   letter-spacing: 0.82px;
-  text-shadow: 2px 0 0 #3a57a1, -2px 0 0 #3a57a1, 0 2px 0 #3a57a1, 0 -2px 0 #3a57a1, 1px 1px #3a57a1, -1px -1px 0 #3a57a1, 1px -1px 0 #3a57a1, -1px 1px 0 #3a57a1;
+  text-shadow: 2px 0 0 #3a57a1, -2px 0 0 #3a57a1, 0 2px 0 #3a57a1,
+    0 -2px 0 #3a57a1, 1px 1px #3a57a1, -1px -1px 0 #3a57a1, 1px -1px 0 #3a57a1,
+    -1px 1px 0 #3a57a1;
   user-select: none;
+}
+.inline-flex {
+  display: inline-flex;
 }
 </style>
