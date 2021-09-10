@@ -1,20 +1,21 @@
 <template>
   <v-card class="text-center">
     <v-toolbar dark color="primary" class="d-flex justify-center">
-      <h1 class="pokemon  ">Who is that Pokémon?</h1>
-      <v-btn icon @click="closeDialog()" class="ml-auto d-flex justify-center">
-        <v-icon>mdi-close</v-icon>
-      </v-btn>
+      <h1 class="pokemon  ">Who's that Pokémon?</h1>
     </v-toolbar>
     <br />
 
-    <v-btn class="primary" @click="prepareGame">Reload</v-btn>
+    <v-btn class="primary mx-2" @click="prepareGame"><v-icon>mdi-refresh</v-icon></v-btn>
+    <v-btn class="primary mx-2" icon dark @click="decrementPts"><v-icon>mdi-minus</v-icon></v-btn>
+    <v-btn text depressed><p><b>Pts:</b> {{ pts }}</p></v-btn>
+    <v-btn class="primary mx-2" icon dark @click="incrementPts"><v-icon>mdi-plus</v-icon></v-btn>
+    <v-btn class="primary mx-2" @click="sendPts"><v-icon>mdi-send</v-icon></v-btn>
     <br /><br /><br />
     <v-row class="inline-flex">
       <v-col class="inline-flex">
         <v-img
           v-if="pokemon.image"
-          :class="!dialog.show && 'img-filter'"
+          class="img-filter"
           :src="pokemon.image"
           width="200px"
         ></v-img>
@@ -43,16 +44,52 @@
           :src="pokemon.image"
           width="200px"
         ></v-img
-        ><br />
-        <v-btn color="secondary terciary--text" @click="prepareGame"
+        ><br /><br />
+        <v-btn color="secondary terciary--text mx-4" @click="prepareGame"
           >Next One!</v-btn
         >
+        <v-btn class="primary mx-4" @click="sendPts">Send {{pts}} Pts</v-btn>
       </v-card>
     </v-dialog>
+    <v-dialog v-model="send.show" width="300">
+      <v-card class="text-center pa-5 text-block ">
+        <v-container>
+          <v-row>
+            <v-col
+              cols="12"
+            >
+              <v-text-field
+                v-model="send.name"
+                label="Name"
+                filled
+                :disabled="loading"
+              ></v-text-field>
+            </v-col>
+            <v-col
+              cols="12"
+            >
+              <label>Pts: {{send.pts}}</label>
+            </v-col>
+            <v-col
+              cols="12"
+            >
+              <v-btn 
+                class="primary" 
+                @click="addFirebase"
+                :loading="loading"
+                :disabled="loading"
+              ><v-icon>mdi-send</v-icon></v-btn>
+            </v-col>
+          </v-row>
+        </v-container>
+      </v-card>
+    </v-dialog>
+    
   </v-card>
 </template>
 
 <script>
+import { mapMutations, mapState } from 'vuex'
 import PokeInfoServ from "@/services/PokeInfo.js";
 
 export default {
@@ -67,7 +104,16 @@ export default {
       show: false,
       message: "",
     },
+    send: {
+      show: false,
+      name: "",
+      pts: 0
+    },
+    loading: false
   }),
+  computed: {
+    ...mapState(['pts'])
+  },
   created() {
     this.prepareGame();
   },
@@ -78,6 +124,7 @@ export default {
     },
   },
   methods: {
+    ...mapMutations(['incrementPts', 'decrementPts', 'restartPts']),
     async getPokemon(randomNumber) {
       let pokemon = [];
 
@@ -118,9 +165,10 @@ export default {
     checkPokemon(pokemonNumber) {
       if (pokemonNumber === this.pokemon.number) {
         this.dialog.message =
-          "Well done! It's Pikachu!! 😜 \n" + this.pokemon.name;
+          "Well done! It's Pikachu!! 😜 Nah It's\n" + this.pokemon.name;
         this.dialog.show = true;
         this.bgClass = "pokemon-correct";
+        this.incrementPts()
       } else {
         this.dialog.message = "No dude 😨, it's " + this.pokemon.name;
         this.dialog.show = true;
@@ -130,6 +178,27 @@ export default {
     closeDialog() {
       return (this.$parent.$store.state.dialog = false);
     },
+    sendPts() {
+      this.send.show = true
+      this.send.pts = this.pts
+    },
+    addFirebase() {
+      this.loading = true
+      setTimeout(() => {
+        const prepare = {
+          name: this.send.name,
+          pts: parseInt(this.send.pts),
+          date: new Date()
+        }
+        console.log('A enviar')
+        console.log(prepare)
+        this.loading = false
+        this.send.show = false
+        this.send.name = ''
+        this.send.pts = 0
+        this.restartPts()
+      }, 2000);
+    }
   },
 };
 </script>
