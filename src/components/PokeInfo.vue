@@ -1,6 +1,16 @@
 <template>
   <v-container>
     <v-row>
+      <input
+        type="text"
+        v-model="searchValue"
+        placeholder="Search Pokémon"
+        id="search-input"
+        v-on:click.capture="filteredPokemons()"
+      />
+      {{ searchValue }}
+    </v-row>
+    <v-row>
       <v-col v-for="(item, i) in pokeList" :key="i" cols="4">
         <v-card
           class="mx-auto "
@@ -33,6 +43,7 @@ export default {
     allInfo: [],
     type0: [],
     type1: [],
+    searchValue: "",
     colors: {
       fire: "#fda5a570",
       grass: "#a3da8870",
@@ -52,6 +63,22 @@ export default {
       normal: "#bfbfa270",
     },
   }),
+  // computed: {
+  //   filteredRecipes() {
+  //     let tempInfo = this.allInfo;
+
+  //     // Process search input
+  //     if (this.searchValue != "" && this.searchValue) {
+  //       tempInfo = tempInfo.filter((item) => {
+  //         return item;
+  //         // .toUpperCase()
+  //         // .includes(this.searchValue.toUpperCase());
+  //         console.log(item);
+  //         return 1;
+  //       });
+  //     }
+  //   },
+  // },
   //
   async created() {
     for (let i = 0; i < this.pokeList; i++) {
@@ -91,8 +118,24 @@ export default {
     // this.names = this.pokemons;
   },
   methods: {
-    setName() {},
-    setImg() {},
+    filteredPokemons() {
+      console.log(this.searchValue);
+      var tempInfo = this.allInfo;
+      console.log(tempInfo);
+
+      // Process search input
+      if (this.searchValue != "" && this.searchValue) {
+        console.log("Here");
+        tempInfo = tempInfo.filter((item) => {
+          // console.log(item.name);
+          return (this.pokemons.push = item.name
+            .toUpperCase()
+            .includes(this.searchValue.toUpperCase()));
+        });
+      }
+    },
+    // setName() {},
+    // setImg() {},
   },
 };
 </script>
