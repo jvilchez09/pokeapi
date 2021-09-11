@@ -120,19 +120,29 @@ export default {
   methods: {
     filteredPokemons() {
       console.log(this.searchValue);
-      var tempInfo = this.allInfo;
-      console.log(tempInfo);
+      // var tempInfo = this.allInfo;
 
       // Process search input
-      if (this.searchValue != "" && this.searchValue) {
-        console.log("Here");
-        tempInfo = tempInfo.filter((item) => {
-          // console.log(item.name);
-          return (this.pokemons.push = item.name
-            .toUpperCase()
-            .includes(this.searchValue.toUpperCase()));
-        });
-      }
+      // if (this.searchValue != "" && this.searchValue) {
+      //   console.log("Here");
+      //   tempInfo = tempInfo.filter((item) => {
+      //     // console.log(item.name);
+      //     return (this.pokemons.push = item.name
+      //       .toUpperCase()
+      //       .includes(this.searchValue.toUpperCase()));
+      //   });
+      // }
+
+      var allPokemons = this.allInfo;
+
+      var pokemonFiltered = allPokemons.filter((each) => {
+        console.log(each.name.toUpperCase());
+        console.log(this.searchValue.toUpperCase());
+
+        return each.name.toUpperCase().includes(this.searchValue.toUpperCase());
+      });
+
+      console.log(pokemonFiltered);
     },
     // setName() {},
     // setImg() {},
