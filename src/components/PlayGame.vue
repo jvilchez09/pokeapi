@@ -53,7 +53,9 @@
 </template>
 
 <script>
+import { collection, getDocs } from "firebase/firestore";
 import PokeInfoServ from "@/services/PokeInfo.js";
+import { db } from "../main";
 
 export default {
   name: "PlayGame",
@@ -71,7 +73,9 @@ export default {
   created() {
     this.prepareGame();
   },
-  mounted() {},
+  mounted() {
+    this.pepe();
+  },
   watch: {
     closeDialog() {
       return (this.toCloseDialog = false);
@@ -129,6 +133,24 @@ export default {
     },
     closeDialog() {
       return (this.$parent.$store.state.dialog = false);
+    },
+    async pepe() {
+      const querySnapshot = await getDocs(collection(db, "game"));
+      querySnapshot.forEach((doc) => {
+        console.log(`${doc.id} => ${doc.data().name}`);
+      });
+      // try {
+      //   const docRef = addDoc(collection(db, "game"), {
+      //     name: this.name,
+      //     pts: this.lastName,
+      //     date: this.email,
+      //   });
+      //   // console.log("Document written with ID: ", docRef.id);
+      //   // console.log(docRef);
+      //   // console.log(submitStatus);
+      // } catch (e) {
+      //   // console.error("Error adding document: ", e);
+      // }
     },
   },
 };
