@@ -6,31 +6,23 @@
         v-model="searchValue"
         placeholder="Search Pokémon"
         id="search-input"
+        v-on:input="filteredPokemons()"
       />
     </v-row>
     <v-row>
-      <v-col v-for="(item, i) in filteredPokemons" :key="i" cols="4">
+      <v-col v-for="(item, i) in pokeList" :key="i" cols="4">
         <v-card
           class="mx-auto "
           max-width="344"
           align="center"
-          :color="item.types[0].type.name"
+          :color="type0[i]"
         >
-          <v-img
-            :src="item.sprites.other['official-artwork'].front_default"
-            width="200px"
-            class="pokemon-bg"
-          ></v-img>
-          <p class="mb-0">#{{ item.id }}</p>
+          <v-img :src="sprites[i]" width="200px" class="pokemon-bg"></v-img>
+          <p class="mb-0">#{{ id[i] }}</p>
           <v-card-title class="justify-center pt-0">
-            {{ item.name }}
+            {{ pokemons[i] }}
           </v-card-title>
-          <v-card-subtitle
-            >Type: {{ item.types[0].type.name }}
-            <template v-if="item.types[1]">{{
-              item.types[1].type.name
-            }}</template>
-          </v-card-subtitle>
+          <v-card-subtitle>Type: {{ type0[i] }} </v-card-subtitle>
         </v-card>
       </v-col>
     </v-row>
@@ -50,7 +42,6 @@ export default {
     allInfo: [],
     type0: [],
     type1: [],
-    allPokemons: [],
     searchValue: "",
     colors: {
       fire: "#fda5a570",
@@ -71,13 +62,24 @@ export default {
       normal: "#bfbfa270",
     },
   }),
-  computed: {
-    filteredPokemons() {
-      return this.allInfo.filter((each) =>
-        each.name.toUpperCase().includes(this.searchValue.toUpperCase())
-      );
-    },
-  },
+  // computed: {
+  //   filteredRecipes() {
+  //     // Process search input
+  //     if (this.searchValue != "" && this.searchValue) {
+  //       let tempInfo = this.allInfo;
+  //       tempInfo.filter((item) => {
+  //         console.log(item.name.toUpperCase());
+  //         console.log(this.searchValue.toUpperCase());
+  //         return item.name
+  //           .toUpperCase()
+  //           .includes(this.searchValue.toUpperCase());
+  //         // .toUpperCase()
+  //         // .includes(this.searchValue.toUpperCase());
+  //       });
+  //     }
+  //     return false;
+  //   },
+  // },
 
   async created() {
     for (let i = 0; i < this.pokeList; i++) {
@@ -111,39 +113,44 @@ export default {
           console.log("hubo un errors" + error);
         });
     }
-    this.allPokemons = this.allInfo;
     // console.log(this.allInfo);
   },
   mounted() {
     // this.names = this.pokemons;
   },
   methods: {
-    // filteredPokemons() {
-    //   console.log(this.searchValue);
-    //   // var tempInfo = this.allInfo;
-    //   // Process search input
-    //   // if (this.searchValue != "" && this.searchValue) {
-    //   //   console.log("Here");
-    //   //   tempInfo = tempInfo.filter((item) => {
-    //   //     // console.log(item.name);
-    //   //     return (this.pokemons.push = item.name
-    //   //       .toUpperCase()
-    //   //       .includes(this.searchValue.toUpperCase()));
-    //   //   });
-    //   // }
-    //   this.allPokemons = this.allInfo.filter((each) => {
-    //     console.log(each.name.toUpperCase());
-    //     console.log(this.searchValue.toUpperCase());
-    //     return each.name.toUpperCase().includes(this.searchValue.toUpperCase());
-    //   });
-    //   // console.log(filtered);
-    //   // let filtered = this.pokemons.filter((each) => {
-    //   //   console.log(each.toUpperCase());
-    //   //   console.log(this.searchValue.toUpperCase());
-    //   //   return each.toUpperCase().includes(this.searchValue.toUpperCase());
-    //   // });
-    //   // console.log(filtered);
-    // },
+    filteredPokemons() {
+      console.log(this.searchValue);
+      // var tempInfo = this.allInfo;
+
+      // Process search input
+      // if (this.searchValue != "" && this.searchValue) {
+      //   console.log("Here");
+      //   tempInfo = tempInfo.filter((item) => {
+      //     // console.log(item.name);
+      //     return (this.pokemons.push = item.name
+      //       .toUpperCase()
+      //       .includes(this.searchValue.toUpperCase()));
+      //   });
+      // }
+
+      var allPokemons = this.allInfo;
+
+      allPokemons.filter((each) => {
+        console.log(each.name.toUpperCase());
+        console.log(this.searchValue.toUpperCase());
+
+        return each.name.toUpperCase().includes(this.searchValue.toUpperCase());
+      });
+
+      let filtered = this.pokemons.filter((each) => {
+        console.log(each.toUpperCase());
+        console.log(this.searchValue.toUpperCase());
+
+        return each.toUpperCase().includes(this.searchValue.toUpperCase());
+      });
+      console.log(filtered);
+    },
     // setName() {},
     // setImg() {},
   },
