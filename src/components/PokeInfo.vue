@@ -1,12 +1,30 @@
 <template>
   <v-container>
     <v-row>
-      <input
-        type="text"
+      <v-text-field
         v-model="searchValue"
         placeholder="Search Pokémon"
         id="search-input"
       />
+      <!-- <v-card> -->
+      <v-container fluid>
+        <v-row align="center">
+          <v-col cols="12" sm="6">
+            <v-select
+              v-model="filterPokemonTypes"
+              :items="listPokemonTypes"
+              attach
+              chips
+              label="Types"
+            ></v-select>
+          </v-col>
+        </v-row>
+      </v-container>
+      <!-- </v-card> -->
+
+      <!-- <v-card>
+       
+      </v-card> -->
     </v-row>
     <v-row>
       <v-col v-for="(item, i) in filteredPokemons" :key="i" cols="4">
@@ -43,7 +61,7 @@ export default {
   name: "PokeInfo",
 
   data: () => ({
-    pokeList: 151,
+    pokeList: 251,
     id: [],
     pokemons: [],
     sprites: [],
@@ -52,6 +70,7 @@ export default {
     type1: [],
     allPokemons: [],
     searchValue: "",
+    filterPokemonTypes: "",
     colors: {
       fire: "#fda5a570",
       grass: "#a3da8870",
@@ -73,10 +92,25 @@ export default {
   }),
   computed: {
     filteredPokemons() {
-      return this.allInfo.filter((each) =>
-        each.name.toUpperCase().includes(this.searchValue.toUpperCase())
+      return this.allInfo.filter(
+        (each) =>
+          each.name.toUpperCase().includes(this.searchValue.toUpperCase()) &&
+          each.types[0].type.name.includes(this.filterPokemonTypes)
+        // this.filterPokemonTypes.every((t) =>
+        //   each.types[0].type.name.includes(t)
+        // )
       );
     },
+    listPokemonTypes() {
+      const pokemonTypes = [
+        ...new Set(this.allInfo.map((each) => each.types[0].type.name)),
+      ];
+
+      return pokemonTypes;
+    },
+    // filterPokemonTypes() {
+    //   this.allInfo.filter((each) => each.types[0].type.name.includes())
+    // },
   },
 
   async created() {
@@ -111,7 +145,7 @@ export default {
           console.log("hubo un errors" + error);
         });
     }
-    this.allPokemons = this.allInfo;
+    // this.allPokemons = this.allInfo;
     // console.log(this.allInfo);
   },
   mounted() {
