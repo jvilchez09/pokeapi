@@ -29,6 +29,8 @@ export default new Vuetify({
         ice: "#98d8d8",
         ghost: "#705898",
         normal: "#bfbfa2",
+        dark: "#705848",
+        steel: "#b8b8d0",
       },
     },
   },

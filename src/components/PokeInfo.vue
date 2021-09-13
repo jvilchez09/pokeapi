@@ -1,29 +1,65 @@
 <template>
   <v-container>
     <v-row>
-      <input
-        type="text"
-        v-model="searchValue"
-        placeholder="Search Pokémon"
-        id="search-input"
-        v-on:click.capture="filteredPokemons()"
-      />
-      {{ searchValue }}
+      <!-- <v-card> -->
+      <v-container fluid>
+        <v-row align="center">
+          <v-col cols="6">
+            <v-text-field
+              v-model="searchValue"
+              placeholder="Search Pokémon"
+              id="search-input"
+              class="pt-5"
+            />
+          </v-col>
+          <v-col cols="6" sm="6">
+            <v-select
+              v-model="filterPokemonTypes"
+              :items="listPokemonTypes"
+              close
+              attach
+              chips
+              color="primary"
+              label="Types"
+            >
+              <template #selection="{ item }">
+                <v-chip close @click:close="close(item)" :color="item">{{
+                  item
+                }}</v-chip>
+              </template>
+            </v-select>
+          </v-col>
+        </v-row>
+      </v-container>
+      <!-- </v-card> -->
+
+      <!-- <v-card>
+       
+      </v-card> -->
     </v-row>
     <v-row>
-      <v-col v-for="(item, i) in pokeList" :key="i" cols="4">
+      <v-col v-for="(item, i) in filteredPokemons" :key="i" cols="4">
         <v-card
           class="mx-auto "
           max-width="344"
           align="center"
-          :color="type0[i]"
+          :color="item.types[0].type.name"
         >
-          <v-img :src="sprites[i]" width="200px" class="pokemon-bg"></v-img>
-          <p class="mb-0">#{{ id[i] }}</p>
+          <v-img
+            :src="item.sprites.other['official-artwork'].front_default"
+            width="200px"
+            class="pokemon-bg"
+          ></v-img>
+          <p class="mb-0">#{{ item.id }}</p>
           <v-card-title class="justify-center pt-0">
-            {{ pokemons[i] }}
+            {{ item.name }}
           </v-card-title>
-          <v-card-subtitle>Type: {{ type0[i] }} </v-card-subtitle>
+          <v-card-subtitle
+            >Type: {{ item.types[0].type.name }}
+            <template v-if="item.types[1]">{{
+              item.types[1].type.name
+            }}</template>
+          </v-card-subtitle>
         </v-card>
       </v-col>
     </v-row>
@@ -36,14 +72,17 @@ export default {
   name: "PokeInfo",
 
   data: () => ({
-    pokeList: 151,
+    pokeList: 251,
     id: [],
     pokemons: [],
     sprites: [],
     allInfo: [],
     type0: [],
     type1: [],
+    allPokemons: [],
     searchValue: "",
+    filterPokemonTypes: "",
+    selected: false,
     colors: {
       fire: "#fda5a570",
       grass: "#a3da8870",
@@ -63,23 +102,31 @@ export default {
       normal: "#bfbfa270",
     },
   }),
-  // computed: {
-  //   filteredRecipes() {
-  //     let tempInfo = this.allInfo;
+  computed: {
+    filteredPokemons() {
+      return this.allInfo.filter(
+        (each) =>
+          each.name.toUpperCase().includes(this.searchValue.toUpperCase()) &&
+          each.types[0].type.name.match(this.filterPokemonTypes)
+        // this.filterPokemonTypes.every(
+        //   (item) => each.types[0].type.name === item
+        // )
+        // this.allPokemon.filter(element => this.listSelect.every(item => element.type === item))
 
-  //     // Process search input
-  //     if (this.searchValue != "" && this.searchValue) {
-  //       tempInfo = tempInfo.filter((item) => {
-  //         return item;
-  //         // .toUpperCase()
-  //         // .includes(this.searchValue.toUpperCase());
-  //         console.log(item);
-  //         return 1;
-  //       });
-  //     }
-  //   },
-  // },
-  //
+        // this.filterPokemonTypes.every((t) =>
+        //   each.types[0].type.name.includes(t)
+        // )
+      );
+    },
+    listPokemonTypes() {
+      const pokemonTypes = [
+        ...new Set(this.allInfo.map((each) => each.types[0].type.name)),
+      ];
+
+      return pokemonTypes;
+    },
+  },
+
   async created() {
     for (let i = 0; i < this.pokeList; i++) {
       await PokeInfoServ.fetchAllInfo(i + 1)
@@ -112,38 +159,56 @@ export default {
           console.log("hubo un errors" + error);
         });
     }
+    // this.allPokemons = this.allInfo;
     // console.log(this.allInfo);
   },
   mounted() {
     // this.names = this.pokemons;
   },
   methods: {
-    filteredPokemons() {
-      console.log(this.searchValue);
-      // var tempInfo = this.allInfo;
-
-      // Process search input
-      // if (this.searchValue != "" && this.searchValue) {
-      //   console.log("Here");
-      //   tempInfo = tempInfo.filter((item) => {
-      //     // console.log(item.name);
-      //     return (this.pokemons.push = item.name
-      //       .toUpperCase()
-      //       .includes(this.searchValue.toUpperCase()));
-      //   });
-      // }
-
-      var allPokemons = this.allInfo;
-
-      var pokemonFiltered = allPokemons.filter((each) => {
-        console.log(each.name.toUpperCase());
-        console.log(this.searchValue.toUpperCase());
-
-        return each.name.toUpperCase().includes(this.searchValue.toUpperCase());
-      });
-
-      console.log(pokemonFiltered);
+    close(item) {
+      this.selected = !this.selected;
+      // console.log(this.filterPokemonTypes);
+      // console.log(item);
+      // this.filterPokemonTypes = false;
+      this.listPokemonTypes.splice(this.listPokemonTypes.indexOf(item), 1);
+      // item = false;
+      // alert("Chip close clicked" + item);
     },
+
+    deleteChip(itemNeedToRemove, array) {
+      for (let i = 0; i < array.length; i += 1) {
+        if (array[parseInt(i, 10)] === itemNeedToRemove) {
+          array.splice(i, 1);
+        }
+      }
+    },
+    // filteredPokemons() {
+    //   console.log(this.searchValue);
+    //   // var tempInfo = this.allInfo;
+    //   // Process search input
+    //   // if (this.searchValue != "" && this.searchValue) {
+    //   //   console.log("Here");
+    //   //   tempInfo = tempInfo.filter((item) => {
+    //   //     // console.log(item.name);
+    //   //     return (this.pokemons.push = item.name
+    //   //       .toUpperCase()
+    //   //       .includes(this.searchValue.toUpperCase()));
+    //   //   });
+    //   // }
+    //   this.allPokemons = this.allInfo.filter((each) => {
+    //     console.log(each.name.toUpperCase());
+    //     console.log(this.searchValue.toUpperCase());
+    //     return each.name.toUpperCase().includes(this.searchValue.toUpperCase());
+    //   });
+    //   // console.log(filtered);
+    //   // let filtered = this.pokemons.filter((each) => {
+    //   //   console.log(each.toUpperCase());
+    //   //   console.log(this.searchValue.toUpperCase());
+    //   //   return each.toUpperCase().includes(this.searchValue.toUpperCase());
+    //   // });
+    //   // console.log(filtered);
+    // },
     // setName() {},
     // setImg() {},
   },
