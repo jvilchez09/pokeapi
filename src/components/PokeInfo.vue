@@ -20,8 +20,8 @@
               chips
               color="primary"
               label="Types"
+              :loading="listPokemonTypes.length == 0"
               multiple
-              :loading="listPokemonTypes.length==0"
             >
               <template #selection="{ item }">
                 <v-chip close @click:close="close(item)" :color="item">{{
@@ -46,12 +46,14 @@
             width="200px"
             class="pokemon-bg"
           ></v-img>
-          <p class="mb-0">#{{ item.id }}</p>
+          <p class="mb-0">#{{ item.id.toString().padStart(3, "0") }}</p>
           <v-card-title class="justify-center pt-0">
             {{ item.name }}
           </v-card-title>
           <v-card-subtitle
-            >Type:<span v-for="(type, j) in item.types" :key="j"> {{ type.type.name }}</span>
+            >Type:<span v-for="(type, j) in item.types" :key="j">
+              {{ type.type.name }}</span
+            >
           </v-card-subtitle>
         </v-card>
       </v-col>
@@ -65,7 +67,7 @@ export default {
   name: "PokeInfo",
 
   data: () => ({
-    pokeList: 251,
+    pokeList: 20,
     id: [],
     pokemons: [],
     sprites: [],
@@ -90,11 +92,43 @@ export default {
       ghost: "#70589870",
       normal: "#bfbfa270",
     },
-    listPokemonTypes: []
+    listPokemonTypes: [],
   }),
   computed: {
     filteredPokemons() {
-      return this.allInfo.filter(pokemon => pokemon.name.toUpperCase().includes(this.filterPokemonName.toUpperCase()))
+      let temp = this.allInfo;
+      temp = this.allInfo.filter(
+        (pokemon) =>
+          pokemon.name
+            .toUpperCase()
+            .includes(this.filterPokemonName.toUpperCase())
+        // pokemon.types.forEach((y) => {
+        //   this.filterPokemonTypes.includes(y.type.name);
+        // })
+        // pokemon.types.some((ai) => this.filterPokemonTypes.includes(ai))
+
+        // pokemon.types[0].type.name.includes(this.filterPokemonTypes[0])
+        // pokemon.types.forEach((y) => {
+        //   console.log(y.type.name);
+        //   // return true;
+        //   for (let index = 0; index < this.listPokemonTypes.length; index++) {
+        //     return this.filterPokemonTypes[index] === y.type.name
+        //       ? true
+        //       : false;
+        //   }
+        // })
+      );
+      console.log(this.allInfo);
+      console.log(this.filterPokemonTypes);
+      if (this.filterPokemonTypes != "" && this.filterPokemonTypes) {
+        temp = temp.filter((pokeType) => {
+          pokeType.types.some((pt) =>
+            pt.type.name.includes(this.filterPokemonTypes[0])
+          );
+        });
+      }
+
+      return temp;
     },
   },
   async created() {
@@ -118,25 +152,24 @@ export default {
           console.log("hubo un errors" + error);
         });
     }
-    await this.getPokemonTypes()
+    this.getPokemonTypes();
   },
-  mounted() {
-  },
+  mounted() {},
   methods: {
     close(item) {
       this.filterPokemonTypes.splice(this.filterPokemonTypes.indexOf(item), 1);
     },
     getPokemonTypes() {
-      const total = []
-      if(this.allInfo.length > 0) {
-        this.allInfo.forEach(x => {
-          x.types.forEach(y => {
-            total.push(y.type.name)
-          })
-        })
+      const total = [];
+      if (this.allInfo.length > 0) {
+        this.allInfo.forEach((x) => {
+          x.types.forEach((y) => {
+            total.push(y.type.name);
+          });
+        });
       }
       this.listPokemonTypes = [...new Set(total)];
-    }
+    },
   },
 };
 </script>
