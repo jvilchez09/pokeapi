@@ -1,20 +1,20 @@
 <template>
   <v-card class="text-center">
     <v-toolbar dark color="primary" class="d-flex justify-center">
-      <h1 class="pokemon  ">Who is that Pokémon?</h1>
-      <v-btn icon @click="closeDialog()" class="ml-auto d-flex justify-center">
-        <v-icon>mdi-close</v-icon>
-      </v-btn>
+      <h1 class="pokemon  ">Who's that Pokémon?</h1>
     </v-toolbar>
     <br />
-
-    <v-btn class="primary" @click="prepareGame">Reload</v-btn>
+    <v-btn class="primary mx-2" @click="cleanTable"><v-icon>mdi-refresh</v-icon></v-btn>
+    <v-btn class="primary mx-2" icon dark @click="decrementPts"><v-icon>mdi-minus</v-icon></v-btn>
+    <v-btn text depressed><p><b>Pts:</b> {{ pts }}</p></v-btn>
+    <v-btn class="primary mx-2" icon dark @click="incrementPts"><v-icon>mdi-plus</v-icon></v-btn>
+    <v-btn class="primary mx-2" @click="addScore"><v-icon>mdi-send</v-icon></v-btn>
     <br /><br /><br />
     <v-row class="inline-flex">
       <v-col class="inline-flex">
         <v-img
           v-if="pokemon.image"
-          :class="!dialog.show && 'img-filter'"
+          class="img-filter"
           :src="pokemon.image"
           width="200px"
         ></v-img>
@@ -35,25 +35,58 @@
     <br /><br />
     <v-dialog v-model="dialog.show" persistent width="400">
       <v-card class="text-center pa-5 text-block ">
+        <v-container>
         {{ dialog.message }}
         <br /><br />
         <v-img
           class="inline-flex"
-          :class="bgClass"
           :src="pokemon.image"
           width="200px"
         ></v-img
-        ><br />
-        <v-btn color="secondary terciary--text" @click="prepareGame"
-          >Next One!</v-btn
-        >
+        ><br /><br />
+          <v-row v-if="!correctAnswer">
+            <v-col
+              cols="12"
+              v-if="pts > 0"
+            >
+              <v-text-field
+                v-model="playerName"
+                label="Enter your name?"
+                :disabled="loading"
+                color="pink"
+                autofocus
+              ></v-text-field>
+              <label>{{pts}} Pts</label>
+              <br><br>
+              <v-btn 
+                class="primary" 
+                @click="addScore"
+                :loading="loading"
+                :disabled="loading || playerName.length === 0 || pts <= 0"
+              ><v-icon>mdi-send</v-icon></v-btn>
+            </v-col>
+            <v-col
+              cols="12"
+            >
+              <v-btn color="white primary--text mx-4" @click="prepareGame">Restart!</v-btn>
+            </v-col>
+          </v-row>
+          <v-row v-if="correctAnswer">
+            <v-col cols="12">
+              <v-btn color="white primary--text mx-4" @click="prepareGame">👍 Next One!!</v-btn>
+            </v-col>
+          </v-row>
+        </v-container>
       </v-card>
-    </v-dialog>
+    </v-dialog>    
   </v-card>
 </template>
 
 <script>
+import { mapMutations, mapState } from 'vuex'
+import { collection, getDocs, addDoc, deleteDoc, doc } from "firebase/firestore";
 import PokeInfoServ from "@/services/PokeInfo.js";
+import { db } from "../main";
 
 export default {
   name: "PlayGame",
@@ -61,23 +94,31 @@ export default {
     pokemonList: [],
     pokemon: [],
     pokemonImg: "",
-    correctAnswer: 0,
-    bgClass: "",
+    correctAnswer: false,
+    listId: [],
     dialog: {
       show: false,
       message: "",
     },
+    playerName: '',
+    loading: false
   }),
+  computed: {
+    ...mapState(['pts'])
+  },
   created() {
     this.prepareGame();
   },
-  mounted() {},
+  mounted() {
+    this.getScore();
+  },
   watch: {
     closeDialog() {
       return (this.toCloseDialog = false);
     },
   },
   methods: {
+    ...mapMutations(['incrementPts', 'decrementPts', 'restartPts']),
     async getPokemon(randomNumber) {
       let pokemon = [];
 
@@ -98,6 +139,7 @@ export default {
     },
     async prepareGame() {
       this.dialog.show = false;
+      !this.correctAnswer ? this.restartPts() : null;
 
       let arr = [];
       this.pokemonList = [];
@@ -116,20 +158,56 @@ export default {
       this.pokemon = this.pokemonList[Math.floor(Math.random() * 2)];
     },
     checkPokemon(pokemonNumber) {
+      this.dialog.show = true;
       if (pokemonNumber === this.pokemon.number) {
         this.dialog.message =
-          "Well done! It's Pikachu!! 😜 \n" + this.pokemon.name;
-        this.dialog.show = true;
-        this.bgClass = "pokemon-correct";
+          "Well done! It's Pikachu!! 😜 Nah It's\n" + this.pokemon.name;
+        this.correctAnswer = true
+        this.incrementPts()
       } else {
         this.dialog.message = "No dude 😨, it's " + this.pokemon.name;
-        this.dialog.show = true;
-        this.bgClass = "pokemon-wrong";
+        this.correctAnswer = false
       }
     },
     closeDialog() {
       return (this.$parent.$store.state.dialog = false);
     },
+    async getScore() {
+      this.listId = []
+      const querySnapshot = await getDocs(collection(db, "game"));
+      querySnapshot.forEach((doc) => {
+        console.log(`playerName: ${doc.data().name} - Score: ${doc.data().pts}`);
+        this.listId.push(doc.id)
+      });
+    },
+    async addScore() {
+      this.loading = true
+      try {
+        console.log(this.send)
+        const docRef = addDoc(collection(db, "game"), {
+          name: this.playerName,
+          pts: parseInt(this.pts),
+          date: new Date()
+        });
+        docRef.then(() => {
+          this.loading = false
+          this.playerName = ''
+          this.restartPts()
+          this.getScore()
+          console.log("Document written with ID: ", docRef.id);
+        })
+      } catch (e) {
+        console.error("Error adding document: ", e);
+      }
+    },
+    async cleanTable() {
+      
+      for await (const item of this.listId) {
+        console.log(item);
+        await deleteDoc(doc(db, "game", item));
+      }
+      await this.getScore()
+    }
   },
 };
 </script>

@@ -6,8 +6,16 @@ Vue.use(Vuex);
 export default new Vuex.Store({
   state: {
     dialog: false,
+    pts: 0
   },
-  mutations: {},
+  getters: {
+    pts: state => state.pts
+  },
+  mutations: {
+    incrementPts: state => state.pts++,
+    decrementPts: state => state.pts--,
+    restartPts: state => state.pts = 0
+  },
   actions: {},
   modules: {},
 });
