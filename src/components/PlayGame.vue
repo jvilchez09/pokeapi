@@ -3,28 +3,21 @@
     <v-toolbar dark color="primary" class="d-flex justify-center">
       <h1 class="pokemon  ">Who's that Pokémon?</h1>
     </v-toolbar>
-    <br />
-    <v-btn class="primary mx-2" @click="cleanTable"><v-icon>mdi-refresh</v-icon></v-btn>
-    <v-btn class="primary mx-2" icon dark @click="decrementPts"><v-icon>mdi-minus</v-icon></v-btn>
-    <v-btn text depressed><p><b>Pts:</b> {{ pts }}</p></v-btn>
-    <v-btn class="primary mx-2" icon dark @click="incrementPts"><v-icon>mdi-plus</v-icon></v-btn>
-    <v-btn class="primary mx-2" @click="addScore"><v-icon>mdi-send</v-icon></v-btn>
-    <br /><br /><br />
     <v-row class="inline-flex">
       <v-col class="inline-flex">
         <v-img
           v-if="pokemon.image"
-          class="img-filter"
+          class="img-filter my-5"
           :src="pokemon.image"
-          width="200px"
+          width="240px"
         ></v-img>
         <h4 class="pokemon" v-else>Loading...</h4>
       </v-col>
     </v-row>
 
-    <br /><br />
+    <br />
     <v-btn
-      class="mx-3"
+      class="mx-3 my-5"
       v-for="(item, index) in pokemonList"
       :key="index"
       :color="item.type"
@@ -33,47 +26,74 @@
       {{ item.name }}
     </v-btn>
     <br /><br />
-    <v-dialog v-model="dialog.show" persistent width="400">
+    <v-dialog v-model="dialog.show" persistent width="50%">
       <v-card class="text-center pa-5 text-block ">
         <v-container>
-        {{ dialog.message }}
-        <br /><br />
-        <v-img
-          class="inline-flex"
-          :src="pokemon.image"
-          width="200px"
-        ></v-img
-        ><br /><br />
-          <v-row v-if="!correctAnswer">
-            <v-col
-              cols="12"
-              v-if="pts > 0"
-            >
-              <v-text-field
-                v-model="playerName"
-                label="Enter your name?"
-                :disabled="loading"
-                color="pink"
-                autofocus
-              ></v-text-field>
-              <label>{{pts}} Pts</label>
-              <br><br>
-              <v-btn 
-                class="primary" 
-                @click="addScore"
-                :loading="loading"
-                :disabled="loading || playerName.length === 0 || pts <= 0"
-              ><v-icon>mdi-send</v-icon></v-btn>
+          <v-row>
+            <v-col cols="8">
+              {{ dialog.message }}
+              <br /><br />
+              <v-img
+                class="inline-flex"
+                :src="pokemon.image"
+                width="200px"
+              ></v-img
+              ><br /><br />
+                <v-row v-if="!correctAnswer">
+                  <v-col
+                    cols="12"
+                    v-if="pts > 0"
+                  >
+                    <v-text-field
+                      v-model="playerName"
+                      label="Enter your name?"
+                      :disabled="loading"
+                      color="pink"
+                      autofocus
+                    ></v-text-field>
+                    <label>{{pts}} Pts</label>
+                    <br><br>
+                    <v-btn 
+                      class="primary" 
+                      @click="addScore"
+                      :loading="loading"
+                      :disabled="loading || playerName.length === 0 || pts <= 0"
+                    ><v-icon>mdi-send</v-icon></v-btn>
+                  </v-col>
+                  <v-col
+                    cols="12"
+                  >
+                    <v-btn color="white primary--text mx-4" @click="prepareGame">Restart!</v-btn>
+                  </v-col>
+                </v-row>
+                <v-row v-if="correctAnswer">
+                  <v-col cols="12">
+                    <v-btn color="white primary--text mx-4" @click="prepareGame">👍 Next One!!</v-btn>
+                  </v-col>
+                </v-row>
             </v-col>
-            <v-col
-              cols="12"
-            >
-              <v-btn color="white primary--text mx-4" @click="prepareGame">Restart!</v-btn>
-            </v-col>
-          </v-row>
-          <v-row v-if="correctAnswer">
-            <v-col cols="12">
-              <v-btn color="white primary--text mx-4" @click="prepareGame">👍 Next One!!</v-btn>
+            <v-col cols="4">
+                <v-simple-table dense height="320">
+                <thead class="red">
+                  <tr>
+                    <th class="text-left pokemon yellow--text">
+                      Name
+                    </th>
+                    <th class="text-center pokemon yellow--text">
+                      Pts
+                    </th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr
+                    v-for="(item, index) in scoreList"
+                    :key="index"
+                  >
+                    <td class="text-left">{{index+1}}. {{item.name}}</td>
+                    <td>{{item.pts}}</td>
+                  </tr>
+                </tbody>
+              </v-simple-table>
             </v-col>
           </v-row>
         </v-container>
@@ -95,7 +115,7 @@ export default {
     pokemon: [],
     pokemonImg: "",
     correctAnswer: false,
-    listId: [],
+    playerList: [],
     dialog: {
       show: false,
       message: "",
@@ -104,7 +124,10 @@ export default {
     loading: false
   }),
   computed: {
-    ...mapState(['pts'])
+    ...mapState(['pts']),
+    scoreList() {
+      return this.playerList.slice(0, 10).sort((a,b)=> (a.pts < b.pts ? 1 : -1))
+    }
   },
   created() {
     this.prepareGame();
@@ -173,12 +196,16 @@ export default {
       return (this.$parent.$store.state.dialog = false);
     },
     async getScore() {
-      this.listId = []
+      this.playerList = []
       const querySnapshot = await getDocs(collection(db, "game"));
       querySnapshot.forEach((doc) => {
-        console.log(`playerName: ${doc.data().name} - Score: ${doc.data().pts}`);
-        this.listId.push(doc.id)
-      });
+        this.playerList.push({
+          id: doc.id,
+          name: doc.data().name,
+          pts: doc.data().pts,
+          date: doc.data().date,
+        })
+      })
     },
     async addScore() {
       this.loading = true
@@ -202,9 +229,9 @@ export default {
     },
     async cleanTable() {
       
-      for await (const item of this.listId) {
+      for await (const item of this.playerList) {
         console.log(item);
-        await deleteDoc(doc(db, "game", item));
+        await deleteDoc(doc(db, "game", item.id));
       }
       await this.getScore()
     }

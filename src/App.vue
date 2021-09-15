@@ -1,17 +1,20 @@
 <template>
   <v-app>
     <v-main>
-      <v-flex xs8 offset-xs2>
-        <h1 class="mt-2 text-center primary--text">
-          Pokédex
-        </h1>
+      <v-flex xs8 offset-xs2 class="text-left">
+        <v-img
+          max-height="150"
+          class="mx-auto my-3"
+          max-width="250"
+          src="@/assets/pokemon.svg"
+        ></v-img>
         <label
           @click="$store.state.dialog = !$store.state.dialog"
-          class="mt-2 text-rigth pokemon"
+          class="pokemon ml-5"
         >
-          Click here to play: Who's that Pokémon!!
+          Play Who's that Pokémon!!
         </label>
-        <v-dialog v-model="$store.state.dialog" width="80%">
+        <v-dialog v-model="$store.state.dialog" width="50%">
           <PlayGame />
         </v-dialog>
         <router-view />
@@ -19,23 +22,20 @@
     </v-main>
     <v-card class="mt-5 pa-3 d-flex justify-center">
       <v-card-title class="text-center pb-0" align-self="center">
-        <small> © 2021 - Por: <a href="https://jotajota.io">José V.</a></small>
+        <small> © 2021 - Por: <a target="_blank" href="https://jotajota.io">José V.</a> / <a target="_blank" href="https://cdmngz.github.io/profile/">Carlos D.</a></small>
       </v-card-title>
     </v-card>
   </v-app>
 </template>
 
 <script>
-// import HelloWorld from "./components/HelloWorld";
 import PlayGame from "./components/PlayGame";
 
 export default {
   name: "App",
-
   components: {
     PlayGame,
   },
-
   data: () => ({
     dialog: false,
   }),
