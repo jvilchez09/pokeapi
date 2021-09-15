@@ -95,21 +95,28 @@ export default {
   }),
   computed: {
     listPokemonTypes() {
-      return this.allInfo.map((x) => x.types.map((y) => y.type.name)).join(',').split(',');
+      return this.allInfo
+        .map((x) => x.types.map((y) => y.type.name))
+        .join(",")
+        .split(",");
     },
     filteredPokemons() {
-      return this.allInfo.filter(pokemon => 
-        pokemon.name.includes(this.filterPokemonName) //PokemonName filter
-        && this.filterPokemonTypes.every(item => pokemon.types.map(y => y.type.name).join(',').includes(item))) // PokemonType filter
+      return this.allInfo.filter(
+        (pokemon) =>
+          pokemon.name.includes(this.filterPokemonName) && //PokemonName filter
+          this.filterPokemonTypes.every((item) =>
+            pokemon.types
+              .map((y) => y.type.name)
+              .join(",")
+              .includes(item)
+          )
+      ); // PokemonType filter
     },
   },
   async created() {
     for (let i = 0; i < this.pokeList; i++) {
       await PokeInfoServ.fetchAllInfo(i + 1)
         .then((response) => {
-          //console.log(response.data)
-          //console.log(response);
-          //id con 3 ceros al inicio
           this.id.push(response.data.id.toString().padStart(3, "0")); //.toUpperCase()
           //nombre primera letra mayuscula
           this.pokemons.push(
@@ -128,7 +135,7 @@ export default {
   methods: {
     close(item) {
       this.filterPokemonTypes.splice(this.filterPokemonTypes.indexOf(item), 1);
-    }
-  }
-}
+    },
+  },
+};
 </script>
