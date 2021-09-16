@@ -39,41 +39,41 @@
                 width="200px"
               ></v-img
               ><br /><br />
-                <v-row v-if="!correctAnswer">
-                  <v-col
-                    cols="12"
-                    v-if="pts > 0"
+              <v-row v-if="!correctAnswer">
+                <v-col cols="12" v-if="pts > 0">
+                  <v-text-field
+                    v-model="playerName"
+                    label="Enter your name?"
+                    :disabled="loading"
+                    color="pink"
+                    autofocus
+                  ></v-text-field>
+                  <label>{{ pts }} Pts</label>
+                  <br /><br />
+                  <v-btn
+                    class="primary"
+                    @click="addScore"
+                    :loading="loading"
+                    :disabled="loading || playerName.length === 0 || pts <= 0"
+                    ><v-icon>mdi-send</v-icon></v-btn
                   >
-                    <v-text-field
-                      v-model="playerName"
-                      label="Enter your name?"
-                      :disabled="loading"
-                      color="pink"
-                      autofocus
-                    ></v-text-field>
-                    <label>{{pts}} Pts</label>
-                    <br><br>
-                    <v-btn 
-                      class="primary" 
-                      @click="addScore"
-                      :loading="loading"
-                      :disabled="loading || playerName.length === 0 || pts <= 0"
-                    ><v-icon>mdi-send</v-icon></v-btn>
-                  </v-col>
-                  <v-col
-                    cols="12"
+                </v-col>
+                <v-col cols="12">
+                  <v-btn color="white primary--text mx-4" @click="prepareGame"
+                    >Restart!</v-btn
                   >
-                    <v-btn color="white primary--text mx-4" @click="prepareGame">Restart!</v-btn>
-                  </v-col>
-                </v-row>
-                <v-row v-if="correctAnswer">
-                  <v-col cols="12">
-                    <v-btn color="white primary--text mx-4" @click="prepareGame">👍 Next One!!</v-btn>
-                  </v-col>
-                </v-row>
+                </v-col>
+              </v-row>
+              <v-row v-if="correctAnswer">
+                <v-col cols="12">
+                  <v-btn color="white primary--text mx-4" @click="prepareGame"
+                    >👍 Next One!!</v-btn
+                  >
+                </v-col>
+              </v-row>
             </v-col>
             <v-col cols="4">
-                <v-simple-table dense height="320">
+              <v-simple-table dense height="320">
                 <thead class="red">
                   <tr>
                     <th class="text-left pokemon yellow--text">
@@ -85,12 +85,9 @@
                   </tr>
                 </thead>
                 <tbody>
-                  <tr
-                    v-for="(item, index) in scoreList"
-                    :key="index"
-                  >
-                    <td class="text-left">{{index+1}}. {{item.name}}</td>
-                    <td>{{item.pts}}</td>
+                  <tr v-for="(item, index) in scoreList" :key="index">
+                    <td class="text-left">{{ index + 1 }}. {{ item.name }}</td>
+                    <td>{{ item.pts }}</td>
                   </tr>
                 </tbody>
               </v-simple-table>
@@ -98,13 +95,19 @@
           </v-row>
         </v-container>
       </v-card>
-    </v-dialog>    
+    </v-dialog>
   </v-card>
 </template>
 
 <script>
-import { mapMutations, mapState } from 'vuex'
-import { collection, getDocs, addDoc, deleteDoc, doc } from "firebase/firestore";
+import { mapMutations, mapState } from "vuex";
+import {
+  collection,
+  getDocs,
+  addDoc,
+  deleteDoc,
+  doc,
+} from "firebase/firestore";
 import PokeInfoServ from "@/services/PokeInfo.js";
 import { db } from "../main";
 
@@ -120,14 +123,16 @@ export default {
       show: false,
       message: "",
     },
-    playerName: '',
-    loading: false
+    playerName: "",
+    loading: false,
   }),
   computed: {
-    ...mapState(['pts']),
+    ...mapState(["pts"]),
     scoreList() {
-      return this.playerList.slice(0, 10).sort((a,b)=> (a.pts < b.pts ? 1 : -1))
-    }
+      return this.playerList
+        .slice(0, 10)
+        .sort((a, b) => (a.pts < b.pts ? 1 : -1));
+    },
   },
   created() {
     this.prepareGame();
@@ -141,7 +146,7 @@ export default {
     },
   },
   methods: {
-    ...mapMutations(['incrementPts', 'decrementPts', 'restartPts']),
+    ...mapMutations(["incrementPts", "decrementPts", "restartPts"]),
     async getPokemon(randomNumber) {
       let pokemon = [];
 
@@ -185,18 +190,18 @@ export default {
       if (pokemonNumber === this.pokemon.number) {
         this.dialog.message =
           "Well done! It's Pikachu!! 😜 Nah It's\n" + this.pokemon.name;
-        this.correctAnswer = true
-        this.incrementPts()
+        this.correctAnswer = true;
+        this.incrementPts();
       } else {
         this.dialog.message = "No dude 😨, it's " + this.pokemon.name;
-        this.correctAnswer = false
+        this.correctAnswer = false;
       }
     },
     closeDialog() {
       return (this.$parent.$store.state.dialog = false);
     },
     async getScore() {
-      this.playerList = []
+      this.playerList = [];
       const querySnapshot = await getDocs(collection(db, "game"));
       querySnapshot.forEach((doc) => {
         this.playerList.push({
@@ -204,37 +209,36 @@ export default {
           name: doc.data().name,
           pts: doc.data().pts,
           date: doc.data().date,
-        })
-      })
+        });
+      });
     },
     async addScore() {
-      this.loading = true
+      this.loading = true;
       try {
-        console.log(this.send)
+        console.log(this.send);
         const docRef = addDoc(collection(db, "game"), {
           name: this.playerName,
           pts: parseInt(this.pts),
-          date: new Date()
+          date: new Date(),
         });
         docRef.then(() => {
-          this.loading = false
-          this.playerName = ''
-          this.restartPts()
-          this.getScore()
-          console.log("Document written with ID: ", docRef.id);
-        })
+          this.loading = false;
+          this.playerName = "";
+          this.restartPts();
+          this.getScore();
+          // console.log("Document written with ID: ", docRef.id);
+        });
       } catch (e) {
         console.error("Error adding document: ", e);
       }
     },
     async cleanTable() {
-      
       for await (const item of this.playerList) {
-        console.log(item);
+        // console.log(item);
         await deleteDoc(doc(db, "game", item.id));
       }
-      await this.getScore()
-    }
+      await this.getScore();
+    },
   },
 };
 </script>
