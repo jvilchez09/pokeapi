@@ -3,7 +3,7 @@
     <v-row>
       <v-container fluid>
         <v-row align="center">
-          <v-col cols="6">
+          <v-col md="6" cols="12">
             <v-text-field
               v-model="filterPokemonName"
               placeholder="Search Pokémon"
@@ -11,7 +11,7 @@
               class="pt-5"
             />
           </v-col>
-          <v-col cols="6" sm="6">
+          <v-col md="6" cols="12">
             <v-select
               v-model="filterPokemonTypes"
               :items="listPokemonTypes"
@@ -34,7 +34,14 @@
       </v-container>
     </v-row>
     <v-row>
-      <v-col v-for="(item, i) in filteredPokemons" :key="i" cols="4">
+      <v-col
+        v-for="(item, i) in filteredPokemons"
+        :key="i"
+        cols="12"
+        md="4"
+        align="center"
+        class="justify-center d-inline"
+      >
         <v-card
           class="mx-auto "
           max-width="344"
