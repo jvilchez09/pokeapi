@@ -1,7 +1,7 @@
 <template>
   <v-card class="text-center">
     <v-toolbar dark color="primary" class="d-flex justify-center">
-      <h1 class="pokemon  ">Who's that Pokémon?</h1>
+      <h1 class="pokemon">Who's that Pokémon? {{pts}} pts</h1>
     </v-toolbar>
     <v-row class="inline-flex">
       <v-col class="inline-flex">
@@ -215,7 +215,6 @@ export default {
     async addScore() {
       this.loading = true;
       try {
-        console.log(this.send);
         const docRef = addDoc(collection(db, "game"), {
           name: this.playerName,
           pts: parseInt(this.pts),
@@ -226,7 +225,6 @@ export default {
           this.playerName = "";
           this.restartPts();
           this.getScore();
-          // console.log("Document written with ID: ", docRef.id);
         });
       } catch (e) {
         console.error("Error adding document: ", e);
@@ -234,7 +232,6 @@ export default {
     },
     async cleanTable() {
       for await (const item of this.playerList) {
-        // console.log(item);
         await deleteDoc(doc(db, "game", item.id));
       }
       await this.getScore();
